@@ -1,0 +1,83 @@
+--- a/vulnerabilities/upload/source/low.php
++++ b/vulnerabilities/upload/source/low.php
+@@ -1,19 +1,65 @@
+ <?php
+ 
+-if( isset( $_POST[ 'Upload' ] ) ) {
+-	// Where are we going to be writing to?
+-	$target_path  = DVWA_WEB_PAGE_TO_ROOT . "hackable/uploads/";
+-	$target_path .= basename( $_FILES[ 'uploaded' ][ 'name' ] );
+-
+-	// Can we move the file to the upload folder?
+-	if( !move_uploaded_file( $_FILES[ 'uploaded' ][ 'tmp_name' ], $target_path ) ) {
+-		// No
+-		$html .= '<pre>Your image was not uploaded.</pre>';
+-	}
+-	else {
+-		// Yes!
+-		$html .= "<pre>{$target_path} succesfully uploaded!</pre>";
+-	}
+-}
++function dvwaNormalizeImageUpload( $source, $destination ) {
++	$maxBytes = 2 * 1024 * 1024;
++	$bytes = @filesize( $source );
++	if( !is_file( $source ) || $bytes === false || $bytes < 1 || $bytes > $maxBytes ) {
++		return false;
++	}
++
++	$info = @getimagesize( $source );
++	$allowedTypes = array( IMAGETYPE_JPEG => 'image/jpeg', IMAGETYPE_PNG => 'image/png' );
++	if( $info === false || !isset( $allowedTypes[ $info[2] ] ) || $info['mime'] !== $allowedTypes[ $info[2] ] ) {
++		return false;
++	}
++	if( $info[0] > 4096 || $info[1] > 4096 || ( $info[0] * $info[1] ) > 10000000 ) {
++		return false;
++	}
++
++	$imageBytes = @file_get_contents( $source );
++	$image = $imageBytes === false ? false : @imagecreatefromstring( $imageBytes );
++	if( $image === false ) {
++		return false;
++	}
++
++	imagealphablending( $image, false );
++	imagesavealpha( $image, true );
++	if( !@imagepng( $image, $destination, 6 ) ) {
++		@unlink( $destination );
++		return false;
++	}
++	@chmod( $destination, 0600 );
++	return true;
++}
++
++function dvwaStoreImageUpload( $upload, $privateDirectory ) {
++	if( !isset( $upload['error'], $upload['tmp_name'] )
++		|| $upload['error'] !== UPLOAD_ERR_OK
++		|| !is_uploaded_file( $upload['tmp_name'] ) ) {
++		return false;
++	}
++	if( !is_dir( $privateDirectory )
++		&& !@mkdir( $privateDirectory, 0700, true )
++		&& !is_dir( $privateDirectory ) ) {
++		return false;
++	}
++
++	$id = bin2hex( random_bytes( 16 ) );
++	$destination = rtrim( $privateDirectory, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . $id . '.png';
++	return dvwaNormalizeImageUpload( $upload['tmp_name'], $destination ) ? $id : false;
++}
++
++if( isset( $_POST[ 'Upload' ] ) ) {
++	// Keep uploads outside the web root; configure this private directory for deployment.
++	$privateDirectory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'dvwa-private-uploads';
++	$id = dvwaStoreImageUpload( isset( $_FILES[ 'uploaded' ] ) ? $_FILES[ 'uploaded' ] : array(), $privateDirectory );
++	if( $id === false ) {
++		$html .= '<pre>Upload rejected: provide a valid PNG/JPEG within the configured limits.</pre>';
++	}
++	else {
++		$safeId = htmlspecialchars( $id, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
++		$html .= '<pre>Image accepted and stored privately. Reference: ' . $safeId . '</pre>';
++	}
++}
+ 
+ ?>

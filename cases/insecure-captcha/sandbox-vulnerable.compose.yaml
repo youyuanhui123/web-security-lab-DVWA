@@ -1,0 +1,51 @@
+name: dvwa-captcha-vulnerable
+services:
+  dvwa:
+    image: ghcr.io/digininja/dvwa:latest
+    environment:
+      DB_SERVER: db
+    depends_on:
+      - db
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+      - /var/lib/php/sessions:rw,nosuid,nodev,size=16m
+      - /var/run/apache2:rw,nosuid,nodev,size=16m
+      - /var/lock/apache2:rw,nosuid,nodev,size=16m
+    mem_limit: 384m
+    cpus: 0.5
+    pids_limit: 96
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - isolated
+    restart: "no"
+
+  db:
+    image: mariadb:10
+    environment:
+      MYSQL_ROOT_PASSWORD: dvwa
+      MYSQL_DATABASE: dvwa
+      MYSQL_USER: dvwa
+      MYSQL_PASSWORD: p@ssw0rd
+    volumes:
+      - database:/var/lib/mysql
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+      - /run/mysqld:rw,nosuid,nodev,size=16m
+    mem_limit: 384m
+    cpus: 0.5
+    pids_limit: 96
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - isolated
+    restart: "no"
+
+networks:
+  isolated:
+    internal: true
+
+volumes:
+  database:

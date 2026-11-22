@@ -1,0 +1,41 @@
+--- a/vulnerabilities/fi/source/low.php
++++ b/vulnerabilities/fi/source/low.php
+@@ -1,6 +1,2 @@
+ <?php
+-
+-// The page we wish to display
+-$file = $_GET[ 'page' ];
+-
+-?>
++require_once __DIR__ . '/impossible.php';
+--- a/vulnerabilities/fi/source/medium.php
++++ b/vulnerabilities/fi/source/medium.php
+@@ -1,10 +1,2 @@
+ <?php
+-
+-// The page we wish to display
+-$file = $_GET[ 'page' ];
+-
+-// Input validation
+-$file = str_replace( array( "http://", "https://" ), "", $file );
+-$file = str_replace( array( "../", "..\\" ), "", $file );
+-
+-?>
++require_once __DIR__ . '/impossible.php';
+--- a/vulnerabilities/fi/source/high.php
++++ b/vulnerabilities/fi/source/high.php
+@@ -1,13 +1,2 @@
+ <?php
+-
+-// The page we wish to display
+-$file = $_GET[ 'page' ];
+-
+-// Input validation
+-if( !fnmatch( "file*", $file ) && $file != "include.php" ) {
+-	// This isn't the page we want!
+-	echo "ERROR: File not found!";
+-	exit;
+-}
+-
+-?>
++require_once __DIR__ . '/impossible.php';

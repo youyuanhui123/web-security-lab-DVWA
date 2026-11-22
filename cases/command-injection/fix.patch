@@ -1,0 +1,112 @@
+--- a/vulnerabilities/exec/index.php
++++ b/vulnerabilities/exec/index.php
+@@ -45,8 +45,7 @@
+ 				<input type=\"submit\" name=\"Submit\" value=\"Submit\">
+ 			</p>\n";
+ 
+-if( $vulnerabilityFile == 'impossible.php' )
+-	$page[ 'body' ] .= "			" . tokenField();
++$page[ 'body' ] .= "			" . tokenField();
+ 
+ $page[ 'body' ] .= "
+ 		</form>
+--- a/vulnerabilities/exec/source/low.php
++++ b/vulnerabilities/exec/source/low.php
+@@ -1,21 +1,2 @@
+ <?php
+-
+-if( isset( $_POST[ 'Submit' ]  ) ) {
+-	// Get input
+-	$target = $_REQUEST[ 'ip' ];
+-
+-	// Determine OS and execute the ping command.
+-	if( stristr( php_uname( 's' ), 'Windows NT' ) ) {
+-		// Windows
+-		$cmd = shell_exec( 'ping  ' . $target );
+-	}
+-	else {
+-		// *nix
+-		$cmd = shell_exec( 'ping  -c 4 ' . $target );
+-	}
+-
+-	// Feedback for the end user
+-	$html .= "<pre>{$cmd}</pre>";
+-}
+-
+-?>
++require_once __DIR__ . '/impossible.php';
+--- a/vulnerabilities/exec/source/medium.php
++++ b/vulnerabilities/exec/source/medium.php
+@@ -1,30 +1,2 @@
+ <?php
+-
+-if( isset( $_POST[ 'Submit' ]  ) ) {
+-	// Get input
+-	$target = $_REQUEST[ 'ip' ];
+-
+-	// Set blacklist
+-	$substitutions = array(
+-		'&&' => '',
+-		';'  => '',
+-	);
+-
+-	// Remove any of the characters in the array (blacklist).
+-	$target = str_replace( array_keys( $substitutions ), $substitutions, $target );
+-
+-	// Determine OS and execute the ping command.
+-	if( stristr( php_uname( 's' ), 'Windows NT' ) ) {
+-		// Windows
+-		$cmd = shell_exec( 'ping  ' . $target );
+-	}
+-	else {
+-		// *nix
+-		$cmd = shell_exec( 'ping  -c 4 ' . $target );
+-	}
+-
+-	// Feedback for the end user
+-	$html .= "<pre>{$cmd}</pre>";
+-}
+-
+-?>
++require_once __DIR__ . '/impossible.php';
+--- a/vulnerabilities/exec/source/high.php
++++ b/vulnerabilities/exec/source/high.php
+@@ -1,37 +1,2 @@
+ <?php
+-
+-if( isset( $_POST[ 'Submit' ]  ) ) {
+-	// Get input
+-	$target = trim($_REQUEST[ 'ip' ]);
+-
+-	// Set blacklist
+-	$substitutions = array(
+-		'||' => '',
+-		'&'  => '',
+-		';'  => '',
+-		'| ' => '',
+-		'-'  => '',
+-		'$'  => '',
+-		'('  => '',
+-		')'  => '',
+-		'`'  => '',
+-	);
+-
+-	// Remove any of the characters in the array (blacklist).
+-	$target = str_replace( array_keys( $substitutions ), $substitutions, $target );
+-
+-	// Determine OS and execute the ping command.
+-	if( stristr( php_uname( 's' ), 'Windows NT' ) ) {
+-		// Windows
+-		$cmd = shell_exec( 'ping  ' . $target );
+-	}
+-	else {
+-		// *nix
+-		$cmd = shell_exec( 'ping  -c 4 ' . $target );
+-	}
+-
+-	// Feedback for the end user
+-	$html .= "<pre>{$cmd}</pre>";
+-}
+-
+-?>
++require_once __DIR__ . '/impossible.php';

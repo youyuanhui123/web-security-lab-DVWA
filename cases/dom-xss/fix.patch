@@ -1,0 +1,40 @@
+--- a/vulnerabilities/xss_d/index.php
++++ b/vulnerabilities/xss_d/index.php
+@@ -49,14 +49,26 @@
+ 		<form name="XSS" method="GET">
+ 			<select name="default">
+ 				<script>
+-					if (document.location.href.indexOf("default=") >= 0) {
+-						var lang = document.location.href.substring(document.location.href.indexOf("default=")+8);
+-						document.write("<option value='" + lang + "'>" + $decodeURI(lang) + "</option>");
+-						document.write("<option value='' disabled='disabled'>----</option>");
+-					}
+-					    
+-					document.write("<option value='English'>English</option>");
+-					document.write("<option value='French'>French</option>");
+-					document.write("<option value='Spanish'>Spanish</option>");
+-					document.write("<option value='German'>German</option>");
++					const allowedLanguages = ["English", "French", "Spanish", "German"];
++					const select = document.currentScript.parentElement;
++					const params = new URLSearchParams(window.location.search);
++					const lang = params.get("default");
++					if (allowedLanguages.includes(lang)) {
++						const option = document.createElement("option");
++						option.value = lang;
++						option.textContent = lang;
++						option.selected = true;
++						select.appendChild(option);
++						const separator = document.createElement("option");
++						separator.value = "";
++						separator.disabled = true;
++						separator.textContent = "----";
++						select.appendChild(separator);
++					}
++					for (const value of allowedLanguages) {
++						const option = document.createElement("option");
++						option.value = value;
++						option.textContent = value;
++						select.appendChild(option);
++					}
+ 				</script>
+ 			</select>

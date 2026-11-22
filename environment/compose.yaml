@@ -1,0 +1,31 @@
+# Adapted from https://github.com/digininja/DVWA/blob/master/compose.yml
+# Local educational lab only. Never expose to external networks.
+name: web-security-lab
+services:
+  dvwa:
+    image: ghcr.io/digininja/dvwa@sha256:61167ec23fbf861f7d96a7beb4be3612d043d48dbc6b239d4f90d7e8cdff8115
+    environment:
+      DB_SERVER: db
+    depends_on:
+      - db
+    ports:
+      - "127.0.0.1:4280:80"
+    networks:
+      - lab
+    restart: "no"
+  db:
+    image: mariadb@sha256:7d829180b5b2a9ba74f6242876ab401a0d7dd338a807e522ef92bc9698760f20
+    environment:
+      MYSQL_ROOT_PASSWORD: dvwa
+      MYSQL_DATABASE: dvwa
+      MYSQL_USER: dvwa
+      MYSQL_PASSWORD: p@ssw0rd
+    volumes:
+      - database:/var/lib/mysql
+    networks:
+      - lab
+    restart: "no"
+networks:
+  lab:
+volumes:
+  database:

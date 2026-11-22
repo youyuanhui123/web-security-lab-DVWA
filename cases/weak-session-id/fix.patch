@@ -1,0 +1,48 @@
+--- a/vulnerabilities/weak_id/source/low.php
++++ b/vulnerabilities/weak_id/source/low.php
+@@ -1,13 +1,2 @@
+ <?php
+-
+-$html = "";
+-
+-if ($_SERVER['REQUEST_METHOD'] == "POST") {
+-	if (!isset ($_SESSION['last_session_id'])) {
+-		$_SESSION['last_session_id'] = 0;
+-	}
+-	$_SESSION['last_session_id']++;
+-	$cookie_value = $_SESSION['last_session_id'];
+-	setcookie("dvwaSession", $cookie_value);
+-}
+-?>
++require_once __DIR__ . '/impossible.php';
+--- a/vulnerabilities/weak_id/source/medium.php
++++ b/vulnerabilities/weak_id/source/medium.php
+@@ -1,9 +1,2 @@
+ <?php
+-
+-$html = "";
+-
+-if ($_SERVER['REQUEST_METHOD'] == "POST") {
+-	$cookie_value = time();
+-	setcookie("dvwaSession", $cookie_value);
+-}
+-?>
++require_once __DIR__ . '/impossible.php';
+--- a/vulnerabilities/weak_id/source/high.php
++++ b/vulnerabilities/weak_id/source/high.php
+@@ -1,14 +1,2 @@
+ <?php
+-
+-$html = "";
+-
+-if ($_SERVER['REQUEST_METHOD'] == "POST") {
+-	if (!isset ($_SESSION['last_session_id_high'])) {
+-		$_SESSION['last_session_id_high'] = 0;
+-	}
+-	$_SESSION['last_session_id_high']++;
+-	$cookie_value = md5($_SESSION['last_session_id_high']);
+-	setcookie("dvwaSession", $cookie_value, time()+3600, "/vulnerabilities/weak_id/", $_SERVER['HTTP_HOST'], false, false);
+-}
+-
+-?>
++require_once __DIR__ . '/impossible.php';

@@ -1,0 +1,8 @@
+# Bytecode and session artifacts stay local.
+**/cookies*.txt
+**/cookiejar*
+**/PHPSESSID*
+**/*.har
+**/*.log
+**/.patch-check/
+**/.make_patch.py

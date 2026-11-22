@@ -1,0 +1,70 @@
+--- a/vulnerabilities/open_redirect/source/low.php
++++ b/vulnerabilities/open_redirect/source/low.php
+@@ -1,13 +1,2 @@
+-<?php
+-
+-if (array_key_exists ("redirect", $_GET) && $_GET['redirect'] != "") {
+-	header ("location: " . $_GET['redirect']);
+-	exit;
+-}
+-
+-http_response_code (500);
+-?>
+-<p>Missing redirect target.</p>
+-<?php
+-exit;
+-?>
++<?php
++require_once __DIR__ . '/impossible.php';
+--- a/vulnerabilities/open_redirect/source/medium.php
++++ b/vulnerabilities/open_redirect/source/medium.php
+@@ -1,21 +1,2 @@
+-<?php
+-
+-if (array_key_exists ("redirect", $_GET) && $_GET['redirect'] != "") {
+-	if (preg_match ("/http:\/\/|https:\/\//i", $_GET['redirect'])) {
+-		http_response_code (500);
+-		?>
+-		<p>Absolute URLs not allowed.</p>
+-		<?php
+-		exit;
+-	} else {
+-		header ("location: " . $_GET['redirect']);
+-		exit;
+-	}
+-}
+-
+-http_response_code (500);
+-?>
+-<p>Missing redirect target.</p>
+-<?php
+-exit;
+-?>
++<?php
++require_once __DIR__ . '/impossible.php';
+--- a/vulnerabilities/open_redirect/source/high.php
++++ b/vulnerabilities/open_redirect/source/high.php
+@@ -1,21 +1,2 @@
+-<?php
+-
+-if (array_key_exists ("redirect", $_GET) && $_GET['redirect'] != "") {
+-	if (strpos($_GET['redirect'], "info.php") !== false) {
+-		header ("location: " . $_GET['redirect']);
+-		exit;
+-	} else {
+-		http_response_code (500);
+-		?>
+-		<p>You can only redirect to the info page.</p>
+-		<?php
+-		exit;
+-	}
+-}
+-
+-http_response_code (500);
+-?>
+-<p>Missing redirect target.</p>
+-<?php
+-exit;
+-?>
++<?php
++require_once __DIR__ . '/impossible.php';

@@ -1,0 +1,73 @@
+name: dvwa-open-redirect-sandbox
+services:
+  dvwa:
+    image: ghcr.io/digininja/dvwa:latest
+    environment:
+      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      HOME: /tmp
+      TMPDIR: /tmp
+      TMP: /tmp
+      DB_SERVER: db
+      PHPIZE_DEPS: ""
+      PHP_INI_DIR: /usr/local/etc/php
+      APACHE_CONFDIR: /etc/apache2
+      APACHE_ENVVARS: /etc/apache2/envvars
+      PHP_CFLAGS: ""
+      PHP_CPPFLAGS: ""
+      PHP_LDFLAGS: ""
+      GPG_KEYS: ""
+      PHP_VERSION: 8.5.12
+      PHP_URL: ""
+      PHP_ASC_URL: ""
+      PHP_SHA256: ""
+    depends_on:
+      - db
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=32m
+      - /var/lib/php/sessions:rw,nosuid,nodev,size=16m
+      - /var/run/apache2:rw,nosuid,nodev,size=16m
+      - /var/lock/apache2:rw,nosuid,nodev,size=16m
+    mem_limit: 384m
+    cpus: 0.5
+    pids_limit: 96
+    ulimits:
+      fsize:
+        soft: 16777216
+        hard: 16777216
+    security_opt:
+      - no-new-privileges:true
+    networks: [isolated]
+    restart: "no"
+  db:
+    image: mariadb:10
+    environment:
+      PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      HOME: /tmp
+      TMPDIR: /tmp
+      LANG: C.UTF-8
+      GOSU_VERSION: ""
+      MARIADB_VERSION: ""
+      MYSQL_ROOT_PASSWORD: disposable-root
+      MYSQL_DATABASE: dvwa
+      MYSQL_USER: dvwa
+      MYSQL_PASSWORD: p@ssw0rd
+    read_only: true
+    tmpfs:
+      - /var/lib/mysql:rw,nosuid,nodev,size=512m
+      - /tmp:rw,noexec,nosuid,nodev,size=32m
+      - /run/mysqld:rw,nosuid,nodev,size=16m
+    mem_limit: 512m
+    cpus: 0.5
+    pids_limit: 96
+    ulimits:
+      fsize:
+        soft: 268435456
+        hard: 268435456
+    security_opt:
+      - no-new-privileges:true
+    networks: [isolated]
+    restart: "no"
+networks:
+  isolated:
+    internal: true
